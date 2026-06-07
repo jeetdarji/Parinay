@@ -44,27 +44,29 @@ export function useMatches(clientId, client) {
       }
       const url = `/match/${clientId}`
 
-      // Attempt 1 — short timeout.
+      // Attempt 1 — generous timeout (batch encoding is fast, but Render
+      // cold-start can add 30-60s on top of the ~5-10s encoding).
       try {
-        const res = await api.post(url, body, { timeout: 12000 })
+        const res = await api.post(url, body, { timeout: 60000 })
         return res.data
       } catch (err) {
-        const isTimeout =
-          err?.code === 'ECONNABORTED' ||
-          (!err?.response && err?.message !== 'Network Error')
-        // Non-timeout (real 4xx/5xx or CORS error) → fail fast.
-        if (!isTimeout) throw err
+        // Real HTTP errors (4xx/5xx) → fail immediately, don't retry.
+        if (err?.response) throw err
+        // Non-timeout network errors (CORS, DNS) → also fail immediately.
+        if (err?.message === 'Network Error') throw err
       }
 
-      // Cold start: tell the UI we're waking the service, wait, retry long.
+      // If we got here, attempt 1 timed out. The server is likely
+      // cold-starting. Show the "waking up" UI and give it more time.
       setIsWakingUp(true)
-      await sleep(8000)
-      setIsWakingUp(false)
+      await sleep(5000) // brief pause before retry
       try {
-        const res = await api.post(url, body, { timeout: 30000 })
+        const res = await api.post(url, body, { timeout: 120000 })
         return res.data
       } catch {
         throw new Error('SERVICE_UNAVAILABLE')
+      } finally {
+        setIsWakingUp(false)
       }
     },
   })

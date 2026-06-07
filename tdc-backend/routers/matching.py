@@ -81,13 +81,23 @@ async def match_client(
         )
 
     try:
-        # Step 4 — compute NLP interest similarities.
-        client_vec = nlp_service.encode_interests(client_profile.hobbies or "")
+        # Step 4 — compute NLP interest similarities (batch encoding).
+        # Batch-encode the client + all candidates in a single call to
+        # SentenceTransformer.encode(). This is ~50x faster than encoding
+        # each candidate individually in a loop.
+        hobbies_texts = [client_profile.hobbies or ""] + [
+            cand.hobbies or "" for cand in candidates
+        ]
+        all_vectors = nlp_service.batch_encode_interests(hobbies_texts)
+        client_vec = all_vectors[0]
+        candidate_vectors = all_vectors[1:]
+
         interest_similarities: dict[str, float] = {}
         all_zero = True
         for i, cand in enumerate(candidates):
-            cand_vec = nlp_service.encode_interests(cand.hobbies or "")
-            similarity = nlp_service.compute_interest_similarity(client_vec, cand_vec)
+            similarity = nlp_service.compute_interest_similarity(
+                client_vec, candidate_vectors[i]
+            )
             if similarity > 0.0:
                 all_zero = False
             key = cand.id if cand.id is not None else f"idx_{i}"

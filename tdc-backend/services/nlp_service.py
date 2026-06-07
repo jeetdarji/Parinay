@@ -128,6 +128,44 @@ class NLPService:
             logger.error("encode_interests failed for text=%r", text, exc_info=True)
             return np.zeros(_EMBED_DIM, dtype=np.float32)
 
+    # -- METHOD 1b (batch) --------------------------------------------------
+    def batch_encode_interests(self, texts: list) -> list:
+        """Encode a list of interest strings into 384-dim vectors in one batch.
+
+        This is dramatically faster than calling encode_interests() in a loop
+        because SentenceTransformer batches the GPU/CPU work internally.
+        Returns a list of np.ndarray, one per input text. Empty/None inputs
+        get a zero vector.
+        """
+        if not texts:
+            return []
+
+        # Separate non-empty texts for batch encoding; track their indices.
+        indices_to_encode = []
+        clean_texts = []
+        for i, t in enumerate(texts):
+            if t and isinstance(t, str) and t.strip():
+                indices_to_encode.append(i)
+                clean_texts.append(t)
+
+        # Pre-fill result with zero vectors.
+        results = [np.zeros(_EMBED_DIM, dtype=np.float32) for _ in texts]
+
+        if clean_texts:
+            try:
+                vecs = self._sentence_model.encode(
+                    clean_texts, convert_to_numpy=True, batch_size=64,
+                )
+                for idx, vec in zip(indices_to_encode, vecs):
+                    results[idx] = vec.astype(np.float32)
+            except Exception:  # noqa: BLE001
+                logger.error(
+                    "batch_encode_interests failed for %d texts", len(clean_texts),
+                    exc_info=True,
+                )
+
+        return results
+
     # -- METHOD 2 -----------------------------------------------------------
     def compute_interest_similarity(
         self, vec_a: np.ndarray, vec_b: np.ndarray
