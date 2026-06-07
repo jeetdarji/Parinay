@@ -2,12 +2,12 @@
 
 *Internal matchmaking CRM and AI-powered matching engine for The Date Crew — India's premium human-led matchmaking service.*
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-parinay.vercel.app-1A1A1A?style=flat-square)](https://parinay.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-parinay--mauve.vercel.app-1A1A1A?style=flat-square)](https://parinay-mauve.vercel.app)
 [![Built with Python](https://img.shields.io/badge/Built%20with-Python%20%7C%20FastAPI-306998?style=flat-square&logo=python&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Built with React](https://img.shields.io/badge/Built%20with-React%2019-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-D4AF37?style=flat-square)](LICENSE)
 
-**[Live Demo](https://parinay.vercel.app)** | **[API Docs (Swagger)](https://parinay-api.onrender.com/docs)**
+**[Live Demo](https://parinay-mauve.vercel.app)** | **[API Docs (Swagger)](https://parinay-oyd8.onrender.com/docs)**
 
 ---
 
@@ -330,7 +330,7 @@ Parinay/
 |---|---|
 | `VITE_SUPABASE_URL` | Your Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Your Supabase anon key |
-| `VITE_BACKEND_URL` | Your Render backend URL (e.g. `https://parinay-api.onrender.com`) |
+| `VITE_BACKEND_URL` | Your Render backend URL (e.g. `https://parinay-oyd8.onrender.com`) |
 
 3. Build command: `npm run build` | Output directory: `dist`
 
@@ -344,7 +344,7 @@ Parinay/
 | `SUPABASE_URL` | Your Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
 | `GEMINI_API_KEY` | Your Google Gemini API key |
-| `FRONTEND_ORIGIN` | Your Vercel frontend URL (e.g. `https://parinay.vercel.app`) |
+| `FRONTEND_ORIGIN` | Your Vercel frontend URL (e.g. `https://parinay-mauve.vercel.app`) |
 
 3. **Build Command** (must include the spaCy model download):
    ```
