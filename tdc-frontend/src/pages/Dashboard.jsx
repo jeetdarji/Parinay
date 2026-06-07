@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { LogOut } from 'lucide-react'
 import { useClients } from '../hooks/useClients'
 import { useCheckInAlerts } from '../hooks/useCheckInAlerts'
 import { useAuthStore } from '../store/authStore'
@@ -50,6 +52,8 @@ function DigestStrip({ alerts }) {
 
 export default function Dashboard() {
   const firstName = useAuthStore((s) => s.firstName())
+  const signOut = useAuthStore((s) => s.signOut)
+  const navigate = useNavigate()
   const view = useUIStore((s) => s.activeView)
   const setView = useUIStore((s) => s.setActiveView)
 
@@ -108,9 +112,23 @@ export default function Dashboard() {
               {greeting}, <span className="italic">{firstName}.</span>
             </h1>
           </div>
-          <span className="font-inter text-[11px] uppercase tracking-[0.25em] text-[#6C6863] md:text-xs">
-            {formatHeaderDate()}
-          </span>
+          <div className="flex flex-col items-end gap-4">
+            <span className="font-inter text-[11px] uppercase tracking-[0.25em] text-[#6C6863] md:text-xs">
+              {formatHeaderDate()}
+            </span>
+            <button
+              id="sign-out-button"
+              type="button"
+              onClick={async () => {
+                await signOut()
+                navigate('/login')
+              }}
+              className="group flex items-center gap-2 font-inter text-[10px] uppercase tracking-[0.2em] text-[#6C6863] transition-colors duration-300 hover:text-[#D4AF37]"
+            >
+              <LogOut size={14} strokeWidth={1.5} className="transition-transform duration-300 group-hover:-translate-x-0.5" />
+              Sign Out
+            </button>
+          </div>
         </div>
 
         {/* DAILY DIGEST STRIP */}

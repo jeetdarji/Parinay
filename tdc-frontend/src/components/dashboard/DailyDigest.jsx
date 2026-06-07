@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { X } from 'lucide-react'
+import { X, LogOut } from 'lucide-react'
+import { useAuthStore } from '../../store/authStore'
 import { useUIStore } from '../../store/uiStore'
 import { useScopedLenis } from '../../hooks/useLenis'
 import { formatHeaderDate } from '../../utils/formatters'
@@ -59,6 +60,8 @@ function Section({ label, count, badgeClass, children }) {
 export default function DailyDigest({ alerts }) {
   const isOpen = useUIStore((s) => s.isDailyDigestOpen)
   const toggle = useUIStore((s) => s.toggleDailyDigest)
+  const signOut = useAuthStore((s) => s.signOut)
+  const navigate = useNavigate()
   const panelRef = useRef(null)
   useScopedLenis(panelRef, { duration: 0.8, enabled: isOpen })
 
@@ -182,6 +185,22 @@ export default function DailyDigest({ alerts }) {
               </Section>
             </>
           )}
+
+          {/* Sign-out button */}
+          <div className="mt-auto border-t border-[#F9F8F6]/8 px-5 py-5">
+            <button
+              id="sidebar-sign-out-button"
+              type="button"
+              onClick={async () => {
+                await signOut()
+                navigate('/login')
+              }}
+              className="group flex w-full items-center gap-2.5 font-inter text-[10px] uppercase tracking-[0.2em] text-[#EBE5DE]/50 transition-colors duration-300 hover:text-[#D4AF37]"
+            >
+              <LogOut size={14} strokeWidth={1.5} className="transition-transform duration-300 group-hover:-translate-x-0.5" />
+              Sign Out
+            </button>
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>
