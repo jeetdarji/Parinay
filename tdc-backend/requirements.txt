@@ -32,6 +32,12 @@ httpx==0.27.0
 # ---------------------------------------------------------------------------
 # RENDER DEPLOYMENT
 # ---------------------------------------------------------------------------
+# PYTHON VERSION:
+#   Render ignores runtime.txt. Python is pinned via .python-version (3.11.9)
+#   or the PYTHON_VERSION env var in the Render dashboard (takes precedence).
+#   Without this, Render defaults to Python 3.14 which has no pre-built wheels
+#   for blis/thinc/spacy and the build will fail.
+#
 # Build Command:
 #   pip install -r requirements.txt && pip install \
 #     https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
